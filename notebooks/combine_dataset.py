@@ -33,9 +33,17 @@ all_df_ECTF["text"] = all_df_ECTF["text"].apply(lambda row : re.sub(r"(?:\@|http
 all_df_ECTF["text"] = all_df_ECTF["text"].apply(lambda row : re.sub(r"RT ", "", row)) # no @
 all_df_ECTF["text"] = all_df_ECTF["text"].apply(lambda row : emoji_pattern.sub(r"", row)) # no emoji
 all_df_ECTF = all_df_ECTF.rename(columns={"text" : "tweet"})
+
+
+all_df["tweet"] = all_df["tweet"].apply(lambda row : re.sub(r"(?:\@|http?\://|https?\://|www)\S+", "", row)) # no URL
+all_df["tweet"] = all_df["tweet"].apply(lambda row : re.sub(r"RT ", "", row)) # no @
+all_df["tweet"] = all_df["tweet"].apply(lambda row : emoji_pattern.sub(r"", row)) # no emoji
 #####################
 ## concat all data ##
 #####################
 all_df_2db = pd.concat([all_df, all_df_ECTF]).drop_duplicates()
-all_df_2db.to_csv("/data")
+all_df_2db.reset_index(inplace = True)
+all_df_2db.drop(columns = ['index'],inplace =True)
+print(all_df_2db)
+all_df_2db.to_csv(data_path + 'database.csv')
 print("SHAPE OF DATABASE : ", "\n", all_df_2db.shape, "\n", "EXAMPLES OF DATABASE : ", "\n", all_df_2db.head(5))
