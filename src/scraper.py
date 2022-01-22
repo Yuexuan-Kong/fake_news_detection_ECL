@@ -23,7 +23,4 @@ def get_tweets(ids:list):
     res = response.json()['data']
     return res
 
-if __name__ == '__main__':
-
-    print(get_tweets([1277088861412192257,1276723310798213124]))
 
