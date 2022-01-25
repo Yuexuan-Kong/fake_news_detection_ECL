@@ -49,9 +49,8 @@ def get_tweets(input_ids):
 
         except:
 
-            res = []
-            full_res += res
-
+            pass
+        
     return full_res
 
 
