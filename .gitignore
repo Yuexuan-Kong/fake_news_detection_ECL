@@ -5,3 +5,6 @@ __pycache__
 */__pycache__
 .env
 /documents
+data/train.txt
+data/test.txt
+data/val.txt
