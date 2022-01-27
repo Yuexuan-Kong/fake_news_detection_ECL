@@ -8,3 +8,4 @@ __pycache__
 data/train.txt
 data/test.txt
 data/val.txt
+.DS_Store
