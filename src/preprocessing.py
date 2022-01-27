@@ -43,7 +43,7 @@ def remove_special_characters(df):
     return df
 
 def remove_stopwords(df):
-    en = spacy.load("en")
+    en = spacy.load("en_core_web_sm")
     stop = en.Defaults.stop_words
     # remove characters which could have semantical meaning from stopwrods list
     for element in ["not", "no", "never", "don't", "won't", "couldn't", "neither"]:
