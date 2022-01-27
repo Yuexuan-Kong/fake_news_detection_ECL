@@ -63,7 +63,7 @@ def remove_stopwords(
 
     df = input_df.copy()
 
-    en = spacy.load("en")
+    en = spacy.load("en_core_web_sm")
     stop = en.Defaults.stop_words
     # remove characters which could have semantical meaning from stopwrods list
     for element in to_keep_stopwords:
