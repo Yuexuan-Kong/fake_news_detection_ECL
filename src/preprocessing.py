@@ -57,7 +57,7 @@ def remove_stopwords(df):
 
 def train_test_split_indices(df):
     all_indices = list(range(len(df)))
-    train_indices, test_indices = train_test_split(all_indices, test_size = 0.2)
+    train_indices, test_indices = train_test_split(all_indices, test_size = 0.1)
     with open("../data/train_indices", "wb") as f:  # Pickling
         pickle.dump(train_indices, f)
     with open("../data/test_indices", "wb") as f:
