@@ -1,6 +1,9 @@
 import re
 import spacy
 import pandas as pd
+from sklearn.model_selection import train_test_split
+import pickle
+
 
 # TODO : add stemming or embedding to reduce the dimensions
 def remove_special_characters(df):
@@ -52,7 +55,25 @@ def remove_stopwords(df):
         lambda x: ' '.join([word for word in x.split() if word not in (stop)]))  # remove all stopwords
     return df
 
+def train_test_split_indices(df):
+    all_indices = list(range(len(df)))
+    train_indices, test_indices = train_test_split(all_indices, test_size = 0.2)
+    with open("../data/train_indices", "wb") as f:  # Pickling
+        pickle.dump(train_indices, f)
+    with open("../data/test_indices", "wb") as f:
+        pickle.dump(test_indices, f)
+
+def load_train_test_indices():
+    with open("../data/train_indices", "rb") as f:
+        train_indices = pickle.load(f)
+    with open("../data/test_indices", "rb") as f:
+        test_indices = pickle.load(f)
+    return train_indices, test_indices
+
 def preprocess(df):
+    train_indices, test_indices = load_train_test_indices()
     remove_special_characters(df)
     remove_stopwords(df)
-    return df
+    train = df.iloc[train_indices, :]
+    test = df.iloc[test_indices, :]
+    return train, test, df
