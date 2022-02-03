@@ -3,6 +3,7 @@ import spacy
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import pickle
+import en_core_web_sm
 
 
 # TODO : add stemming or embedding to reduce the dimensions
@@ -43,7 +44,7 @@ def remove_special_characters(df):
     return df
 
 def remove_stopwords(df):
-    en = spacy.load("en")
+    en = en_core_web_sm.load()
     stop = en.Defaults.stop_words
     # remove characters which could have semantical meaning from stopwrods list
     for element in ["not", "no", "never", "don't", "won't", "couldn't", "neither"]:
