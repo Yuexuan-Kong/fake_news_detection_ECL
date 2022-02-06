@@ -6,7 +6,10 @@ import pickle
 
 
 # TODO : add stemming or embedding to reduce the dimensions
-def remove_special_characters(df):
+def remove_special_characters(input_df):
+
+    df = input_df.copy()
+
     df['preprocess'] = df.apply(lambda row: row['tweet'].replace("\n", " "),
                                 axis=1)  # remove new line character
     df["preprocess"] = df["preprocess"].apply(lambda row: re.sub(r"RT ", "", row).lower())  
@@ -42,38 +45,50 @@ def remove_special_characters(df):
                                                 axis=1)  # remove all additional spaces
     return df
 
-def remove_stopwords(df):
+def remove_stopwords(
+    input_df,
+    additional_stopwords = [
+        "_", 
+        "#"
+    ],
+    to_keep_stopwords = [
+        "not", 
+        "no", 
+        "never", 
+        "don't", 
+        "won't", 
+        "couldn't", 
+        "neither"
+        ]
+    ):
+
+    df = input_df.copy()
+
     en = spacy.load("en")
     stop = en.Defaults.stop_words
     # remove characters which could have semantical meaning from stopwrods list
-    for element in ["not", "no", "never", "don't", "won't", "couldn't", "neither"]:
+    for element in to_keep_stopwords:
         stop.discard(element)
     # add _ and hashtags in the stopwords list
-    for element in ["_", "#"]:  # remove _ and hashtags
+    for element in additional_stopwords:  # remove _ and hashtags
         stop.add(element)
     df['preprocess'] = df['preprocess'].apply(
         lambda x: ' '.join([word for word in x.split() if word not in (stop)]))  # remove all stopwords
     return df
 
-def train_test_split_indices(df):
-    all_indices = list(range(len(df)))
-    train_indices, test_indices = train_test_split(all_indices, test_size = 0.1)
-    with open("../data/train_indices", "wb") as f:  # Pickling
-        pickle.dump(train_indices, f)
-    with open("../data/test_indices", "wb") as f:
-        pickle.dump(test_indices, f)
+def train_val_split(df,val_size=0.1,rd_state=42):
 
-def load_train_test_indices():
-    with open("../data/train_indices", "rb") as f:
-        train_indices = pickle.load(f)
-    with open("../data/test_indices", "rb") as f:
-        test_indices = pickle.load(f)
-    return train_indices, test_indices
+    train_df, val_df = train_test_split(df,test_size=val_size,random_state=rd_state)
+    return train_df, val_df
+    
 
-def preprocess(df):
-    train_indices, test_indices = load_train_test_indices()
-    remove_special_characters(df)
-    remove_stopwords(df)
-    train = df.iloc[train_indices, :]
-    test = df.iloc[test_indices, :]
-    return train, test, df
+def preprocess(input_df):
+
+    df = input_df.copy()
+
+    df = remove_special_characters(df)
+    df = remove_stopwords(df)
+
+    train, val = train_val_split(df)
+
+    return train, val, df
