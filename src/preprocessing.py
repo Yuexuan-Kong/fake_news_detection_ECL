@@ -2,7 +2,6 @@ import re
 import spacy
 import pandas as pd
 from sklearn.model_selection import train_test_split
-import pickle
 
 
 # TODO : add stemming or embedding to reduce the dimensions
@@ -90,5 +89,5 @@ def preprocess(input_df):
     df = remove_stopwords(df)
 
     train, val = train_val_split(df)
-
+    
     return train, val, df
