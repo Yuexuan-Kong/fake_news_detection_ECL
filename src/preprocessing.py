@@ -3,22 +3,9 @@ import spacy
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
+# Global variables used in functions
 
-# TODO : add stemming or embedding to reduce the dimensions
-def remove_special_characters(input_df):
-
-    df = input_df.copy()
-
-    df['preprocess'] = df.apply(lambda row: row['tweet'].replace("\n", " "),
-                                axis=1)  # remove new line character
-    df["preprocess"] = df["preprocess"].apply(lambda row: re.sub(r"RT ", "", row).lower())  
-    # no RT@ and lowercase, this has to be executed first, otherwise rt in lowercase will be removed as well
-    df["preprocess"] = df["preprocess"].apply(lambda row: re.sub(r"#", "", row))  # no# #
-    df["preprocess"] = df["preprocess"].apply(lambda row: re.sub(r"_", "", row))  # no_ #
-    df["preprocess"] = df["preprocess"].apply(
-        lambda row: re.sub(r"(?:\@|http?\://|https?\://|www)\S+", "", row))  # no URLs
-
-    emoji_pattern = re.compile("["
+EMOJI_PATTERN = re.compile("["
                                u"\U0001F600-\U0001F64F"  # emoticons
                                u"\U0001F300-\U0001F5FF"  # symbols & pictographs
                                u"\U0001F680-\U0001F6FF"  # transport & map symbols
@@ -38,55 +25,77 @@ def remove_special_characters(input_df):
                                u"\ufe0f"  # dingbats
                                u"\u3030"
                                "]+", flags=re.UNICODE)
+
+# --------------------------------------------------------------
+
+def remove_retweets(text):
+
+    return re.sub(r"RT\s@([a-zA-Z0-9_]+:)", "", text)
+
+def count_retweets(text):
+
+    return len(re.findall(r"RT\s@([a-zA-Z0-9_]+:)",text))
+
+def remove_mentions(text):
+
+    return re.sub(r"@([a-zA-Z0-9_]+)",'',text)
+
+def count_mentions(text):
+
+    return len(re.findall(r"@([a-zA-Z0-9_]+)",text))
+
+def remove_urls(text):
+
+    return re.sub(r"(http?\://|https?\://|www)\S+", '',text)
+
+def count_urls(text):
+
+    return len(re.findall(r"(http?\://|https?\://|www)\S+",text))
+
+def remove_hashtags(text):
+
+    return re.sub(r"#", "", text)
+
+def count_hashtags(text):
+
+    return len(re.findall(r"#",text))
+
+def remove_additional_space(text):
+
+    return re.sub('  *', ' ',text)
+
+def replace_slash_chars_by_space(text):
+
+    res = text.replace(
+        "\n"," "
+        ).replace(
+            "\r"," "
+        ).replace(
+            "\t"," "
+        )
+    return res
+
+def remove_underscore(text):
+
+    return re.sub(r"_", "", text)
+
+def remove_emojis(text):
+
+    return EMOJI_PATTERN.sub(r"", text)
+
+def remove_stopwords(text,list_stopwords):
+
+    res = ' '.join(
+        [word for word in text.split() if word not in list_stopwords]
+        )
+    return res
+
+def to_lowercase(text):
+
+    return text.lower()
     
-    df["preprocess"] = df["preprocess"].apply(lambda row: emoji_pattern.sub(r"", row))  # no emoji
-    df['preprocess'] = df.apply(lambda row: re.sub('  +', ' ', row['preprocess']).strip(),
-                                                axis=1)  # remove all additional spaces
-    return df
-
-def remove_stopwords(
-    input_df,
-    additional_stopwords = [
-        "_", 
-        "#"
-    ],
-    to_keep_stopwords = [
-        "not", 
-        "no", 
-        "never", 
-        "don't", 
-        "won't", 
-        "couldn't", 
-        "neither"
-        ]
-    ):
-
-    df = input_df.copy()
-    en = spacy.load("en_core_web_sm")
-    stop = en.Defaults.stop_words
-    # remove characters which could have semantical meaning from stopwrods list
-    for element in to_keep_stopwords:
-        stop.discard(element)
-    # add _ and hashtags in the stopwords list
-    for element in additional_stopwords:  # remove _ and hashtags
-        stop.add(element)
-    df['preprocess'] = df['preprocess'].apply(
-        lambda x: ' '.join([word for word in x.split() if word not in (stop)]))  # remove all stopwords
-    return df
 
 def train_val_split(df,val_size=0.1,rd_state=42):
 
     train_df, val_df = train_test_split(df,test_size=val_size,random_state=rd_state)
     return train_df, val_df
-    
-
-def preprocess(input_df):
-
-    df = input_df.copy()
-
-    df = remove_special_characters(df)
-    df = remove_stopwords(df)
-
-    train, val = train_val_split(df)
-    
-    return train, val, df
