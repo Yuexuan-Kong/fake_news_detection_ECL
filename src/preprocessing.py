@@ -2,6 +2,8 @@ import re
 import spacy
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from bs4 import BeautifulSoup
+from html import unescape
 
 # Global variables used in functions
 
@@ -93,7 +95,12 @@ def remove_stopwords(text,list_stopwords):
 def to_lowercase(text):
 
     return text.lower()
-    
+
+def remove_html_stuff(text):
+
+    soup = BeautifulSoup(unescape(text), 'lxml')
+    return soup.text
+
 
 def train_val_split(df,val_size=0.1,rd_state=42):
 
