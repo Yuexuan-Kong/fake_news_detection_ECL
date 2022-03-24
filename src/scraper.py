@@ -1,9 +1,11 @@
 import json
+from datetime import datetime, date
 import os
 
 import requests
 from dotenv import load_dotenv
 import numpy as np
+from soupsieve import escape
 from tqdm import tqdm
 
 from utils import list_to_full_string
@@ -52,5 +54,25 @@ def get_tweets(input_ids):
             pass
         
     return full_res
+
+def get_today_tweets(research_query,max_results):
+
+    start_time = str(date.today()) + "T00:00:00.00Z"
+
+    url = f"https://api.twitter.com/2/tweets/search/recent?query=({research_query}) lang:en -is:retweet -is:reply&start_time={start_time}&max_results={max_results}&tweet.fields=created_at"
+
+    payload={}
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+
+    try:
+
+        res = response.json()['data']
+    
+    except:
+        
+        res = []
+
+    return res
 
 

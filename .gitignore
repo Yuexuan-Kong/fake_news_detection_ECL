@@ -9,3 +9,4 @@ data/train.txt
 data/test.txt
 data/val.txt
 .DS_Store
+models/fasttext.bin
