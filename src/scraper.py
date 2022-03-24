@@ -59,7 +59,7 @@ def get_today_tweets(research_query,max_results):
 
     start_time = str(date.today()) + "T00:00:00.00Z"
 
-    url = f"https://api.twitter.com/2/tweets/search/recent?query=({research_query}) lang:en -is:retweet -is:reply&start_time={start_time}&max_results={max_results}&tweet.fields=created_at"
+    url = f"https://api.twitter.com/2/tweets/search/recent?query=({research_query}) lang:en -is:retweet -is:reply -is:quote&start_time={start_time}&max_results={max_results}&tweet.fields=created_at"
 
     payload={}
 
