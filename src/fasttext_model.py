@@ -25,6 +25,11 @@ def get_model_accuracy(model,file_path:str):
     accuracy = results[1]
     return accuracy
 
+def load_model_from_path(path):
+
+    model = fasttext.load_model(path)
+    return model
+
 def predict_model(model,input,return_prob=False):
 
     input = list(map(lambda x:x.replace("\n",""),input))
